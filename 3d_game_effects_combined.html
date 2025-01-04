@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Design - Game Themed with 360 Camera and 3D Effects</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/controls/OrbitControls.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+        .game-name { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: white; font-size: 2rem; font-family: Arial, sans-serif; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="game-name">Nama Game Anda</div> <!-- Ganti dengan nama yang ingin ditampilkan -->
+
+    <script>
+        // Scene, Camera, Renderer
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Background Image (Karakter dari game)
+        const textureLoader = new THREE.TextureLoader();
+        const textures = [
+            'https://c4.wallpaperflare.com/wallpaper/976/300/896/free-fire-dj-alok-character-art-hd-wallpaper-preview.jpg',  // Free Fire (DJ Alok)
+            'https://wallpapercave.com/wp/wp9644063.jpg',  // Mobile Legends (Layla)
+            'https://wallpapercave.com/wp/wp9445722.jpg',  // PUBG (Character)
+            'https://static.wikia.nocookie.net/supersus/images/9/92/SuperSus_poster.jpg/revision/latest?cb=20220115130244'  // SuperSus (Character)
+        ];
+
+        // Ganti gambar latar belakang sesuai dengan urutan game
+        let textureIndex = 0;
+        scene.background = textureLoader.load(textures[textureIndex]); // Default background Free Fire
+
+        // Text 3D
+        const loader = new THREE.FontLoader();
+        loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function (font) {
+            const geometry = new THREE.TextGeometry('Nama Game Anda', {
+                font: font,
+                size: 10,
+                height: 2,
+                curveSegments: 12,
+                bevelEnabled: true,
+                bevelThickness: 0.5,
+                bevelSize: 1
+            });
+
+            const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            const textMesh = new THREE.Mesh(geometry, material);
+            scene.add(textMesh);
+
+            // Position text
+            textMesh.position.x = -25;
+            textMesh.position.y = 0;
+            textMesh.position.z = -50;
+
+            // Rotate text
+            function animate() {
+                requestAnimationFrame(animate);
+                textMesh.rotation.x += 0.01;
+                textMesh.rotation.y += 0.01;
+                renderer.render(scene, camera);
+            }
+
+            animate();
+        });
+
+        // Camera position
+        camera.position.z = 100;
+
+        // OrbitControls untuk kontrol 360 derajat kamera
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        // Resize renderer on window resize
+        window.addEventListener('resize', function () {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+
+        // Fungsi untuk mengganti gambar latar belakang setiap beberapa detik
+        function changeBackground() {
+            textureIndex = (textureIndex + 1) % textures.length;  // Looping dalam urutan array
+            scene.background = textureLoader.load(textures[textureIndex]);
+        }
+
+        // Ganti background setiap 3 detik
+        setInterval(changeBackground, 3000);
+
+        // Menambahkan efek 3D dari game dengan objek-objek 3D (Contoh: senjata atau objek khas)
+        
+        // 1. Free Fire (Senjata atau efek DJ Alok)
+        const alokEffect = new THREE.Mesh(
+            new THREE.SphereGeometry(5, 32, 32),
+            new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: true })
+        );
+        alokEffect.position.set(-30, 0, -50);
+        scene.add(alokEffect);
+
+        // 2. Mobile Legends (Senjata atau efek Layla)
+        const laylaEffect = new THREE.Mesh(
+            new THREE.CylinderGeometry(5, 5, 20, 32),
+            new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true })
+        );
+        laylaEffect.position.set(30, 0, -50);
+        scene.add(laylaEffect);
+
+        // 3. PUBG (Kendaraan atau senjata 3D)
+        const pubgCar = new THREE.Mesh(
+            new THREE.BoxGeometry(10, 5, 5),
+            new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true })
+        );
+        pubgCar.position.set(0, 20, -50);
+        scene.add(pubgCar);
+
+        // 4. SuperSus (Karakter atau elemen 3D)
+        const susEffect = new THREE.Mesh(
+            new THREE.ConeGeometry(5, 15, 32),
+            new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true })
+        );
+        susEffect.position.set(0, -20, -50);
+        scene.add(susEffect);
+
+        // Render function
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update(); // Update OrbitControls
+            renderer.render(scene, camera);
+        }
+
+        animate(); // Start the animation loop
+    </script>
+</body>
+</html>
